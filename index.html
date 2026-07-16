@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+  />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="theme-color" content="#0a0a14" />
+  <title>SANDTRIS</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="app">
+
+    <!-- ============================ MAIN MENU ============================ -->
+    <section id="screen-main" class="screen menu-screen">
+      <div class="menu-inner">
+        <h1 class="game-title">
+          <span class="title-sand">SAND</span><span class="title-tris">TRIS</span>
+        </h1>
+        <p class="subtitle">FALLING SAND · FALLING BLOCKS</p>
+        <nav class="menu-buttons">
+          <button class="pix-btn primary" id="btn-play">PLAY</button>
+          <button class="pix-btn" data-nav="highscore">HIGH SCORE</button>
+          <button class="pix-btn" data-nav="settings">SETTINGS</button>
+        </nav>
+        <p class="storage-note" id="storage-note"></p>
+      </div>
+    </section>
+
+    <!-- ============================ HIGH SCORE ========================= -->
+    <section id="screen-highscore" class="screen menu-screen hidden">
+      <div class="menu-inner">
+        <h2 class="screen-title">HIGH SCORE</h2>
+        <div class="hs-panel">
+          <div class="hs-crown">★</div>
+          <div class="hs-best" id="hs-best">0</div>
+          <div class="hs-caption">BEST SCORE</div>
+        </div>
+        <div class="button-row">
+          <button class="pix-btn danger" id="btn-reset-score">RESET</button>
+          <button class="pix-btn back-btn" data-nav="main">BACK</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================ SETTINGS ============================ -->
+    <section id="screen-settings" class="screen menu-screen hidden">
+      <div class="menu-inner wide">
+        <h2 class="screen-title">SETTINGS</h2>
+        <div class="settings-list">
+          <div class="setting-row">
+            <label>MUSIC</label>
+            <input type="range" id="set-music" min="0" max="100" step="1" />
+            <span class="setting-val" id="val-music">50</span>
+          </div>
+          <div class="setting-row">
+            <label>SOUND</label>
+            <input type="range" id="set-sfx" min="0" max="100" step="1" />
+            <span class="setting-val" id="val-sfx">70</span>
+          </div>
+          <div class="setting-row toggle-row" id="row-movement">
+            <label>MOVEMENT</label>
+            <button class="pix-toggle wide-toggle" id="tgl-movement">SMOOTH</button>
+          </div>
+          <div class="setting-row toggle-row" id="row-touch">
+            <label>TOUCH CONTROLS</label>
+            <button class="pix-toggle wide-toggle" id="tgl-touch">GESTURES</button>
+          </div>
+          <div class="setting-row toggle-row" data-toggle="ghostPiece">
+            <label>GHOST PIECE</label>
+            <button class="pix-toggle" id="tgl-ghost">ON</button>
+          </div>
+          <div class="setting-row toggle-row" data-toggle="showGrid">
+            <label>GRID</label>
+            <button class="pix-toggle" id="tgl-grid">OFF</button>
+          </div>
+          <div class="setting-row toggle-row" data-toggle="screenShake">
+            <label>SCREEN SHAKE</label>
+            <button class="pix-toggle" id="tgl-shake">ON</button>
+          </div>
+        </div>
+        <div class="button-row">
+          <button class="pix-btn danger" id="btn-reset-settings">RESET</button>
+          <button class="pix-btn back-btn" data-nav="main">BACK</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================ GAME =============================== -->
+    <section id="screen-game" class="screen game-screen hidden">
+      <div class="hud">
+        <div class="hud-box hold-box">
+          <div class="hud-label">HOLD</div>
+          <canvas id="hold-canvas" class="mini-canvas"></canvas>
+        </div>
+        <div class="hud-stats">
+          <div class="stat"><span class="stat-label">SCORE</span><span id="hud-score" class="stat-value">0</span></div>
+          <div class="stat-line">
+            <div class="stat small"><span class="stat-label">LEVEL</span><span id="hud-level" class="stat-value">1</span></div>
+            <div class="stat small"><span class="stat-label">LINES</span><span id="hud-lines" class="stat-value">0</span></div>
+          </div>
+        </div>
+        <div class="hud-box next-box">
+          <div class="hud-label">NEXT</div>
+          <div id="next-list" class="next-list"></div>
+        </div>
+      </div>
+
+      <div class="board-area">
+        <canvas id="board" class="board-canvas"></canvas>
+        <div id="combo-popup" class="combo-popup"></div>
+        <div id="gesture-hint" class="gesture-hint hidden">
+          <span>DRAG&nbsp;·&nbsp;MOVE</span>
+          <span>TAP&nbsp;·&nbsp;ROTATE</span>
+          <span>FLICK DOWN&nbsp;·&nbsp;DROP</span>
+          <span>SWIPE UP&nbsp;·&nbsp;HOLD</span>
+          <span>TWO FINGERS&nbsp;·&nbsp;ROTATE BACK</span>
+        </div>
+        <button id="btn-pause" class="pause-btn" aria-label="Pause">❚❚</button>
+      </div>
+
+      <div id="touch-controls" class="touch-controls">
+        <div class="touch-cluster left-cluster">
+          <button class="tbtn" data-act="rotccw" aria-label="Rotate CCW">↺</button>
+          <button class="tbtn" data-act="left" aria-label="Left">◀</button>
+          <button class="tbtn" data-act="right" aria-label="Right">▶</button>
+          <button class="tbtn" data-act="rotcw" aria-label="Rotate CW">↻</button>
+        </div>
+        <div class="touch-cluster right-cluster">
+          <button class="tbtn" data-act="hold" aria-label="Hold">HOLD</button>
+          <button class="tbtn" data-act="softdrop" aria-label="Soft Drop">▼</button>
+          <button class="tbtn tbtn-drop" data-act="harddrop" aria-label="Hard Drop">DROP</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================ PAUSE OVERLAY ====================== -->
+    <div id="overlay-pause" class="overlay hidden">
+      <div class="overlay-panel">
+        <h2 class="screen-title">PAUSED</h2>
+        <nav class="menu-buttons">
+          <button class="pix-btn primary" id="btn-resume">RESUME</button>
+          <button class="pix-btn" id="btn-restart">RESTART</button>
+          <button class="pix-btn danger" id="btn-quit">MAIN MENU</button>
+        </nav>
+      </div>
+    </div>
+
+    <!-- ============================ GAME OVER ========================== -->
+    <div id="overlay-gameover" class="overlay hidden">
+      <div class="overlay-panel">
+        <h2 class="screen-title">GAME OVER</h2>
+        <div class="go-stats" id="go-stats"></div>
+        <div id="go-newbest" class="go-newbest hidden">NEW BEST!</div>
+        <nav class="menu-buttons">
+          <button class="pix-btn primary" id="btn-retry">PLAY AGAIN</button>
+          <button class="pix-btn danger" id="btn-go-menu">MAIN MENU</button>
+        </nav>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Plain scripts in dependency order so index.html runs from file:// with
+       no build step or module/CORS issues. -->
+  <script src="js/config.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/settings.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/particles.js"></script>
+  <script src="js/physics.js"></script>
+  <script src="js/piece.js"></script>
+  <script src="js/board.js"></script>
+  <script src="js/renderer.js"></script>
+  <script src="js/input.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/game.js"></script>
+</body>
+</html>
